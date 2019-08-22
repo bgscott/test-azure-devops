@@ -1,0 +1,5 @@
+hello\Application.class
+hello\controllers\AddressRestController.class
+hello\controllers\NameRestController.class
+hello\model\Name.class
+hello\model\Address.class

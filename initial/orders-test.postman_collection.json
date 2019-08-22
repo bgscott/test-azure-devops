@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "11b87ca2-f8e0-43c6-9e3e-c5380042fb2e",
+		"name": "orders-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/name?name=ben",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"name"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "ben"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get address",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5b862af4-4d94-42ab-a617-52bed02c2893",
+						"exec": [
+							"pm.sendRequest(\"http://localhost:8080/address\", function (err, response) {",
+							"    console.log(response.json());",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"112 Shoemaker lane\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/address",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

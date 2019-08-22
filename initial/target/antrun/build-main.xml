@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <exec dir="." executable="cmd">
+    <arg line="/c newman run C:\dev\test\gs-spring-boot-docker-master\initial/postmanrunner/orders-test.postman_collection.json"/>
+  </exec>
+</target>
+</project>
