@@ -25,3 +25,9 @@ hs_err_pid*
 /.idea
 /README.adoc
 *.iml
+/LICENSE.writing.txt
+/complete
+/test
+/.travis.yml
+/CONTRIBUTING.adoc
+/LICENSE.code.txt
