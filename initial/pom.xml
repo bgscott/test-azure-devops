@@ -28,73 +28,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.30.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <verbose>true</verbose>
-                            <dockerHost>tcp://127.0.0.1:12375</dockerHost>
-                            <phase></phase>
-                            <images>
-                                <image>
-                                    <name>krogerdocker:rest-endpoint-1</name>
-                                    <alias>dockerfile</alias>
-                                    <build>
-                                        <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
-                                        <assembly>
-                                            <descriptorRef>artifact</descriptorRef>
-                                        </assembly>
-                                    </build>
-                                    <run>
-                                        <ports>
-                                            <port>8080:8080</port>
-                                        </ports>
-                                        <wait>
-                                            <http>
-                                                <url>http://localhost:8080</url>
-                                                <method>GET</method>
-                                                <status>200..399</status>
-                                            </http>
-                                            <time>10000</time>
-                                            <kill>1000</kill>
-                                            <shutdown>500</shutdown>
-                                        </wait>
-                                    </run>
-                                </image>
-                            </images>
-
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>removecontainer</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                        <configuration>
-                            <verbose>true</verbose>
-                            <dockerHost>tcp://127.0.0.1:12375</dockerHost>
-                            <images>
-                                <image>
-                                    <name>fabric8:dmp-sample-dockerfile</name>
-                                    <alias>dockerfile</alias>
-                                </image>
-                            </images>
-
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -130,40 +64,125 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <phase>integration-test</phase>
-                        <configuration>
-                            <target>
-                                <exec dir="." executable="cmd">
-                                    <arg line="/c newman run ${basedir}/postmanrunner/orders-test.postman_collection.json"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.jcraft</groupId>
-                        <artifactId>jsch</artifactId>
-                        <version>0.1.53</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-jsch</artifactId>
-                        <version>1.6.5</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            
         </plugins>
     </build>
+	<profiles>
+		<profile>
+			<id>buildDocker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.30.0</version>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<verbose>true</verbose>
+									<dockerHost>tcp://127.0.0.1:12375</dockerHost>
+									<phase></phase>
+									<images>
+										<image>
+											<name>krogerdocker:rest-endpoint-1</name>
+											<alias>dockerfile</alias>
+											<build>
+												<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+												<assembly>
+													<descriptorRef>artifact</descriptorRef>
+												</assembly>
+											</build>
+											<run>
+												<ports>
+													<port>8080:8080</port>
+												</ports>
+												<wait>
+													<http>
+														<url>http://localhost:8080</url>
+														<method>GET</method>
+														<status>200..399</status>
+													</http>
+													<time>10000</time>
+													<kill>1000</kill>
+													<shutdown>500</shutdown>
+												</wait>
+											</run>
+										</image>
+									</images>
+
+								</configuration>
+							</execution>
+							<execution>
+								<id>removecontainer</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+								<configuration>
+									<verbose>true</verbose>
+									<dockerHost>tcp://127.0.0.1:12375</dockerHost>
+									<images>
+										<image>
+											<name>fabric8:dmp-sample-dockerfile</name>
+											<alias>dockerfile</alias>
+										</image>
+									</images>
+
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			
+		</profile>
+		<profile>
+			<id>testWithPostman</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<phase>integration-test</phase>
+								<configuration>
+									<target>
+										<exec dir="." executable="cmd">
+											<arg line="/c newman run ${basedir}/postmanrunner/orders-test.postman_collection.json"/>
+										</exec>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>com.jcraft</groupId>
+								<artifactId>jsch</artifactId>
+								<version>0.1.53</version>
+							</dependency>
+							<dependency>
+								<groupId>ant</groupId>
+								<artifactId>ant-jsch</artifactId>
+								<version>1.6.5</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
     <dependencies>
         <dependency>
